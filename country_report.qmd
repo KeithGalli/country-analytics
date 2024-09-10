@@ -4,88 +4,90 @@ author: "Keith Galli"
 echo: False
 error: False
 warning: False
-toc: True
-title-block-banner: true
-title-block-banner-color: "White"
+engine: jupyter
+format:
+    typst:
+        template-partials: 
+            - typst-show.typ
+            - typst-template.typ
+
+params:
+    country_code: "USA"
+country_code: "USA"
 ---
 
-# USA Report
-
-## General 
 ```{python}
-from helpers import plot_country_location
-
-# Example usage
-plot_country_location("GBR", zoom=1.20, fig_width=16, fig_height=8)
+#| tags: [parameters]
+country_code = 'USA'
+zoom = 1.2
 ```
 
-## TESTING
+```{python}
+COLOR = "#192f5d"
+COUNTRY_CODE = country_code
+```
+
 ```{python}
 from helpers import plot_country
 
-plot_country('USA', zoom_factor=1.5)  # For United States
-# plot_country('CZE', zoom_factor=5)  
+plot_country(COUNTRY_CODE, zoom_factor=zoom, color=COLOR)  # For United States
 ```
 
-## Population over time
+:::: {layout="[0.33, 0.66]"}
+
+::: {#firstcol height='50px'}
+
+---
+
+```{python}
+from helpers import highlight_text, get_total_population
+
+population = get_total_population(COUNTRY_CODE)
+highlight_text(str(population), 'Population', color=COLOR)
+```
+---
+
+```{python}
+from helpers import gender_ratio
+
+gender_ratio(COUNTRY_CODE, color=COLOR)
+```
+
+---
+```{python}
+from helpers import highlight_text
+
+highlight_text('34 Years', 'Median Age', color=COLOR)
+```
+
+---
+```{python}
+from helpers import highlight_text
+
+highlight_text('77 Years', 'Life Expectancy', color=COLOR)
+```
+
+:::
+
+::: {#secondcol}
+
 ```{python}
 #| echo: false
 #| fig-align: left
 #| fig-width: 1
-import pandas as pd
-import matplotlib.pyplot as plt
+#| fig-cap: "Population over time"
+from helpers import population_over_time
 
-plt.style.use('fivethirtyeight')
-
-df = pd.read_csv('./country_demographic_data.csv', low_memory=False)
-COUNTRY = 'japan'
-country = df[df['Location'].str.lower()==COUNTRY]
-country.set_index('Time', inplace=True)
-columns = ['TPopulation1July', 'NetMigrations', 'PopSexRatio', 'MedianAgePop']
-country.head()
-country = country[columns]
-
-# Filter the data for the desired years
-years = range(1950, 2021, 1)
-filtered_df = country.loc[years]
-
-# Create the line graph
-plt.plot(filtered_df.index, filtered_df['TPopulation1July'])
-plt.xlabel('Year')
-plt.ylabel('Population')
-plt.title('Population Over Time')
-plt.show()
+population_over_time(COUNTRY_CODE, color=COLOR)
 ```
+---
 
-<!-- :::: {layout="[0.5,0.5]"} -->
-<!-- ::: {#firstcol} -->
-## Yo yo yo yo
-Hello world!!
-<!-- ::: -->
-
-<!-- ::: {#seccolumn} -->
-## Gender Ratio
 ```{python}
-import pandas as pd
-import matplotlib.pyplot as plt
+from helpers import plot_ages
 
-df = pd.read_csv('./country_demographic_data.csv', low_memory=False)
-COUNTRY = 'canada'
-country = df[df['Location'].str.lower()==COUNTRY]
-country.set_index('Time', inplace=True)
-columns = ['TPopulation1July', 'NetMigrations', 'PopSexRatio', 'MedianAgePop']
-
-# Filter the data for the most recent year
-most_recent_year = filtered_df.index.max()
-most_recent_data = country.loc[most_recent_year]
-
-# Create the pie chart
-labels = ['Male', 'Female']
-
-sizes = [most_recent_data['PopSexRatio']/(most_recent_data['PopSexRatio']+100), 100/(100+most_recent_data['PopSexRatio'])]
-plt.pie(sizes, labels=labels, autopct='%1.1f%%')
-plt.title('Gender Ratio')
-plt.show()
+plot_ages(COUNTRY_CODE, color=COLOR)
 ```
-<!-- ::: -->
-<!-- ::::  -->
+
+:::
+
+::::
