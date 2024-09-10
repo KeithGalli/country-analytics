@@ -43,7 +43,7 @@ plot_country(COUNTRY_CODE, zoom_factor=zoom, color=COLOR)  # For United States
 from helpers import highlight_text, get_total_population
 
 population = get_total_population(COUNTRY_CODE)
-highlight_text(str(population), 'Population', color=COLOR)
+highlight_text(f"{population:,}", 'Population', color=COLOR)
 ```
 ---
 
@@ -55,16 +55,20 @@ gender_ratio(COUNTRY_CODE, color=COLOR)
 
 ---
 ```{python}
-from helpers import highlight_text
+from helpers import highlight_text, get_median_age
 
-highlight_text('34 Years', 'Median Age', color=COLOR)
+age = get_median_age(COUNTRY_CODE)
+
+highlight_text(str(age), 'Median Age', color=COLOR)
 ```
 
 ---
 ```{python}
-from helpers import highlight_text
+from helpers import highlight_text, get_life_expectancy
 
-highlight_text('77 Years', 'Life Expectancy', color=COLOR)
+life_expectancy = get_life_expectancy(COUNTRY_CODE)
+
+highlight_text(str(life_expectancy), 'Life Expectancy', color=COLOR)
 ```
 
 :::

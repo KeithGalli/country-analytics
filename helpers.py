@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from collections import OrderedDict
+from datetime import datetime
 
 def plot_country(country_code, zoom_factor=1.1, color='blue'):
     # Load the world map dataset
@@ -190,23 +191,38 @@ def get_total_population(country_code, directory='./data'):
     columns = ['TPopulation1July']
 
     # Get the most recent year where TPopulation1July is not None
-    most_recent_year = country[country['TPopulation1July'].notnull()].index.max()
+    
+    most_recent_year = datetime.now().year
 
     # Get the population for the most recent year
     most_recent_population = country.loc[most_recent_year, 'TPopulation1July']
 
-    return most_recent_population
+    return most_recent_population*1000
 
-def get_total_population(country_code, directory='./data'):
+def get_median_age(country_code, directory='./data'):
     df = pd.read_csv(f'{directory}/country_demographic_data.csv', low_memory=False)
     country = df[df['ISO3_code']==country_code]
     country.set_index('Time', inplace=True)
-    columns = ['TPopulation1July']
+    columns = ['MedianAgePop']
 
-    # Get the most recent year
-    most_recent_year = country.index.max()
+    most_recent_year = datetime.now().year
 
     # Get the population for the most recent year
-    most_recent_population = country.loc[most_recent_year, 'TPopulation1July']
+    median_age = country.loc[most_recent_year, 'MedianAgePop']
 
-    return most_recent_population
+    return median_age
+
+def get_life_expectancy(country_code, directory='./data'):
+    df = pd.read_csv(f'{directory}/country_demographic_data.csv', low_memory=False)
+    country = df[df['ISO3_code']==country_code]
+    country.set_index('Time', inplace=True)
+    columns = ['LEx']
+
+    # Filter the data for the most recent year
+    most_recent_year = datetime.now().year
+    most_recent_data = country.loc[most_recent_year]
+
+    # Get the life expectancy for the most recent year
+    life_expectancy = most_recent_data['LEx']
+
+    return life_expectancy
