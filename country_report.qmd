@@ -11,9 +11,9 @@ format:
             - typst-show.typ
             - typst-template.typ
 
-params: 
-    country_code: "IND"
-    color: "036531"
+# metadata parameters
+country_code: "IND"
+color: "036531"
 ---
 ```{python}
 #| tags: [parameters]

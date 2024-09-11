@@ -2,10 +2,10 @@
   $if(title)$
     title: "$title$",
   $endif$
-  $if(params.country_code)$
-    country_code: "$params.country_code$",
+  $if(country_code)$
+    country_code: "$country_code$",
   $endif$
-  $if(params.color)$
-    color: "$params.color$",
+  $if(color)$
+    color: "$color$",
   $endif$
 )
