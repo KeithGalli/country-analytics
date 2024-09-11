@@ -58,25 +58,31 @@ def plot_country(country_code, zoom_factor=1.1, color='blue'):
 def population_over_time(df, year=2023, color='blue'):
     columns = ['TPopulation1July']
     df = df[columns]
-    
-    filtered_df = df.loc[range(1950, year)]
-    upcoming_df = df.loc[[year, year + 10]]
+
+    # Historical data (up to the current year)
+    historical_df = df.loc[range(1950, year)]
+
+    # Forecasted data (from the current year onwards)
+    forecast_df = df.loc[range(year, year + 10)]
 
     # Check if the population exceeds 1 million people
-    max_population = filtered_df['TPopulation1July'].max()
-    
+    max_population = historical_df['TPopulation1July'].max()
+
     if max_population >= 1000:
         # If population is over 1 million, plot in millions
-        filtered_df['TPopulation1July'] /= 1000
-        upcoming_df['TPopulation1July'] /= 1000
+        historical_df['TPopulation1July'] /= 1000
+        forecast_df['TPopulation1July'] /= 1000
         y_label = "Population (Millions)"
     else:
         # Otherwise, plot in thousands
         y_label = "Population (Thousands)"
+
+    # Plot historical data
+    plt.plot(historical_df.index, historical_df['TPopulation1July'], color=color, linewidth=2.5)
     
-    plt.plot(filtered_df.index, filtered_df['TPopulation1July'], color=color, linewidth=2.5)
-    plt.plot(upcoming_df.index, upcoming_df['TPopulation1July'], color=color, linewidth=2.5, linestyle='--')
-    
+    # Plot forecasted data with a dashed line
+    plt.plot(forecast_df.index, forecast_df['TPopulation1July'], color=color, linewidth=2.5, linestyle='--')
+
     plt.ylabel(y_label)
     plt.tight_layout()
     plt.show()
@@ -89,7 +95,10 @@ def gender_ratio(df, year=2023, color='blue'):
              100/(100+most_recent_data['PopSexRatio'])]
     colors = [color, lighten_color(color)]
     
-    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%')
+    plt.figure(figsize=(6, 6))
+    _, _, autotexts = plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', textprops={"fontsize": 18})
+    for autotext in autotexts:
+        autotext.set_color('white')
     plt.show()
 
 # Note: Use worldbank DF for this function
@@ -105,6 +114,7 @@ def plot_ages(df, year=2023, color='blue'):
     df_summed = df_avg.groupby(['Country Name', 'Country Code', 'Year', 'Combined Group']).agg({'Value': 'sum'}).reset_index()
 
     plt.bar(df_summed['Combined Group'], df_summed['Value'], color=color)
+    plt.ylabel("% of Population")
     plt.tight_layout()
     plt.show()
 

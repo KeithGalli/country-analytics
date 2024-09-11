@@ -10,27 +10,29 @@ format:
         template-partials: 
             - typst-show.typ
             - typst-template.typ
-            
-country_code: "BLZ"
+
+params: 
+    country_code: "IND"
+    color: "036531"
 ---
 ```{python}
 #| tags: [parameters]
-color = "#192f5d"
-country_code = 'BLZ'
-zoom = 3
+color = "#036531"
+country_code = 'IND'
+zoom = 1.2
 ```
 
 ```{python}
 import pandas as pd
 from helpers import plot_country, population_over_time, gender_ratio, plot_ages, get_country_stat, highlight_text
 
-# Load and filter data once
-df_country_un = pd.read_csv('./data/un-country-data.csv', low_memory=False)
-df_country_wb = pd.read_csv('./data/worldbank-country-data.csv', delimiter=';', low_memory=False)
+# Load both data files
+df_un = pd.read_csv('./data/un-country-data.csv', low_memory=False)
+df_wb = pd.read_csv('./data/worldbank-country-data.csv', delimiter=';', low_memory=False)
 
 # Filter by country code
-df_country_un = df_country_un[df_country_un['ISO3_code'] == country_code]
-df_country_wb = df_country_wb[df_country_wb['Country Code'] == country_code]
+df_country_un = df_un[df_un['ISO3_code'] == country_code]
+df_country_wb = df_wb[df_wb['Country Code'] == country_code]
 
 # Set the index to Year
 df_country_un.set_index('Time', inplace=True)
