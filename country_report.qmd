@@ -10,16 +10,13 @@ format:
         template-partials: 
             - typst-show.typ
             - typst-template.typ
-
-params:
-    country_code: "USA"
-country_code: "USA"
+            
+country_code: "BGR"
 ---
-
 ```{python}
 #| tags: [parameters]
-country_code = 'USA'
-zoom = 1.2
+country_code = 'BGR'
+zoom = 1.75
 ```
 
 ```{python}
@@ -33,9 +30,13 @@ from helpers import plot_country
 plot_country(COUNTRY_CODE, zoom_factor=zoom, color=COLOR)  # For United States
 ```
 
+```{=typst}
+#v(-20pt)
+```
+
 :::: {layout="[0.33, 0.66]"}
 
-::: {#firstcol height='50px'}
+::: {#firstcol}
 
 ---
 
@@ -87,9 +88,14 @@ population_over_time(COUNTRY_CODE, color=COLOR)
 ---
 
 ```{python}
-from helpers import plot_ages
+#| echo: false
+#| fig-align: left
+#| fig-width: 1
+#| fig-cap: "Age Distribution"
 
-plot_ages(COUNTRY_CODE, color=COLOR)
+from helpers import plot_ages_new
+
+plot_ages_new(COUNTRY_CODE, color=COLOR)
 ```
 
 :::

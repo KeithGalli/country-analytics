@@ -11,7 +11,7 @@
 
  set page(
     "us-letter",
-    margin: (left: 0.5in, right: 0.5in, top: 0.7in, bottom: 0.0in),
+    margin: (left: 0.5in, right: 0.5in, top: 0.55in, bottom: 0.0in),
     background: place(top, rect(fill: rgb("15397F"), width: 100%, height: 0.5in)),
     header: align(
       horizon,

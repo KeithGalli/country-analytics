@@ -4,6 +4,7 @@ import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from collections import OrderedDict
 from datetime import datetime
+import re
 
 def plot_country(country_code, zoom_factor=1.1, color='blue'):
     # Load the world map dataset
@@ -22,7 +23,7 @@ def plot_country(country_code, zoom_factor=1.1, color='blue'):
         raise ValueError(f"No country found with the code {country_code}")
     
     # Create a figure with the desired aspect ratio
-    fig, ax = plt.subplots(figsize=(9, 3))  # 2:1 aspect ratio
+    fig, ax = plt.subplots(figsize=(8.7, 2.9))  # 3:1 aspect ratio
     
     # Plot the entire world in light gray
     world.plot(ax=ax, color='white', edgecolor=color)
@@ -80,10 +81,19 @@ def population_over_time(country_code, directory='./data', color='blue'):
     years = range(1950, 2021, 1)
     filtered_df = country.loc[years]
 
+    upcoming_df = country.loc[[2020,2030]]
+
     # Create the line graph
+    # Divide Y values by 1000 if any one of the values exceeds 1,000,000
+    if filtered_df['TPopulation1July'].max() > 1000:
+        filtered_df['TPopulation1July'] /= 1000
+        upcoming_df['TPopulation1July'] /= 1000
+    
     plt.plot(filtered_df.index, filtered_df['TPopulation1July'], color=color, linewidth=2.5)
-    # plt.ylabel('Population')
-    # plt.title('Population Over Time')
+
+    # Plot the upcoming years with dashed line
+    plt.plot(upcoming_df.index, upcoming_df['TPopulation1July'], color=color, linewidth=2.5, linestyle='--')
+
     plt.show()
 
 def gender_ratio(country_code, directory='./data/', color='blue'):
@@ -105,55 +115,59 @@ def gender_ratio(country_code, directory='./data/', color='blue'):
     # plt.title('Gender Ratio')
     plt.show()
 
-def plot_ages(country_code, color='blue'):
-    # Read CSV file
-    df = pd.read_csv('./data/worldbank-country-profile.csv', delimiter=';', thousands=',')
+def plot_ages_new(country_code, color='blue'):
+    df = pd.read_csv('./data/worldbank-country-profile.csv', delimiter=';',)
+    YEAR = 2022
     
     # Filter for the specific country
-    df = df[df['Country Code'] == country_code]
-    
-    # Define the indicators we're interested in and their simplified labels, in the desired order
-    age_indicators = OrderedDict([
-        ('Population ages 0-14 (% of total population)', '0-14'),
-        ('Population ages 15-64 (% of total population)', '15-64'),
-        ('Population ages 65 and above (% of total population)', '65+')
-    ])
+    df = df[(df['Country Code'] == country_code) & (df['Year'] == YEAR)]
     
     # Filter for these indicators
-    df_ages = df[df['Indicator Name'].isin(age_indicators.keys())]
-    
-    # Get the most recent year with data for all indicators
-    most_recent_year = df_ages.groupby('Year').count()['Indicator Name'].idxmin()
-    
-    # Filter for the most recent year and create a series with indicator names as index
-    age_data = df_ages[df_ages['Year'] == most_recent_year].set_index('Indicator Name')['Value']
-    
-    # Convert data to numeric, replacing any non-numeric values with NaN
-    age_data = pd.to_numeric(age_data, errors='coerce')
-    
-    # Reorder the data according to our ordered dictionary
-    age_data = age_data.reindex(age_indicators.keys())
-    
-    # Create the bar chart
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(age_indicators.values(), age_data.values, color=color)
-    
-    # Customize the chart
-    plt.title(f'Age Distribution Overview - {country_code} ({most_recent_year})', fontsize=16)
-    plt.xlabel('Age Group', fontsize=12)
-    plt.ylabel('Percentage of Total Population', fontsize=12)
-    plt.ylim(0, 100)  # Set y-axis to go from 0 to 100%
-    
-    # Add value labels on top of each bar
-    for bar in bars:
-        height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2., height,
-                 f'{height:.1f}%',
-                 ha='center', va='bottom')
-    
-    # Adjust layout and display the chart
+    df = df[df['Indicator Code'].str.startswith('SP.POP') & df['Indicator Code'].str.endswith('5Y')].sort_values(['Indicator Code'])
+
+    # Step 1: Create a base indicator code by removing gender suffix (.FE or .MA)
+    df['Base Indicator Code'] = df['Indicator Code'].str.replace(r'\.FE|\.MA', '', regex=True)
+
+    # Step 2: Group by base indicator code and average male/female values
+    df_avg = df.groupby(['Country Name', 'Country Code', 'Year', 'Base Indicator Code']).agg({'Value': 'mean'}).reset_index()
+
+    # Step 3: Extract the first two digits of the age group (first two digits in the code represent the group)
+    df_avg['Age Group Start'] = df_avg['Base Indicator Code'].str.extract(r'(\d{2})').astype(int)
+
+    # Step 4: Define function to combine specific age groups
+    def combine_age_groups(age):
+        if age in [0, 5]:  # Combine 00-04 with 05-09
+            return '00-09'
+        elif age in [10, 15]:  # Combine 10-14 with 15-19
+            return '10-19'
+        elif age in [20, 25]:  # Combine 20-24 with 25-29
+            return '20-29'
+        elif age in [30, 35]:  # Combine 30-34 with 35-39
+            return '30-39'
+        elif age in [40, 45]:  # Combine 40-44 with 45-49
+            return '40-49'
+        elif age in [50, 55]:  # Combine 50-54 with 55-59
+            return '50-59'
+        elif age in [60, 65]:  # Combine 60-64 with 65-69
+            return '60-69'
+        elif age in [70, 75]:  # Combine 70-74 with 75-79
+            return '70-79'
+        elif age in [80]:
+            return '80+'
+
+        return None
+
+    # Step 5: Apply the function to combine age groups
+    df_avg['Combined Group'] = df_avg['Age Group Start'].apply(combine_age_groups)
+
+    # Step 6: Group by combined age groups and sum the values
+    df_summed = df_avg.groupby(['Country Name', 'Country Code', 'Year', 'Combined Group']).agg({'Value': 'sum'}).reset_index()
+
+    plt.bar(df_summed['Combined Group'], df_summed['Value'], color=color)
     plt.tight_layout()
     plt.show()
+
+    # return df_summed
 
 def lighten_color(hex_color, factor=0.5):
     # Convert hex color to RGB
@@ -168,7 +182,7 @@ def lighten_color(hex_color, factor=0.5):
 
 def highlight_text(text, header=None, color='blue'):
     # Create a blank image
-    image = Image.new('RGB', (1100, 400), color = (255, 255, 255))
+    image = Image.new('RGB', (1150, 400), color = (255, 255, 255))
 
     # Initialize ImageDraw
     draw = ImageDraw.Draw(image)
