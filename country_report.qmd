@@ -11,23 +11,33 @@ format:
             - typst-show.typ
             - typst-template.typ
             
-country_code: "BGR"
+country_code: "BLZ"
 ---
 ```{python}
 #| tags: [parameters]
-country_code = 'BGR'
-zoom = 1.75
+color = "#192f5d"
+country_code = 'BLZ'
+zoom = 3
 ```
 
 ```{python}
-COLOR = "#192f5d"
-COUNTRY_CODE = country_code
+import pandas as pd
+from helpers import plot_country, population_over_time, gender_ratio, plot_ages, get_country_stat, highlight_text
+
+# Load and filter data once
+df_country_un = pd.read_csv('./data/un-country-data.csv', low_memory=False)
+df_country_wb = pd.read_csv('./data/worldbank-country-data.csv', delimiter=';', low_memory=False)
+
+# Filter by country code
+df_country_un = df_country_un[df_country_un['ISO3_code'] == country_code]
+df_country_wb = df_country_wb[df_country_wb['Country Code'] == country_code]
+
+# Set the index to Year
+df_country_un.set_index('Time', inplace=True)
 ```
 
 ```{python}
-from helpers import plot_country
-
-plot_country(COUNTRY_CODE, zoom_factor=zoom, color=COLOR)  # For United States
+plot_country(country_code, zoom_factor=zoom, color=color)  # For United States
 ```
 
 ```{=typst}
@@ -41,35 +51,28 @@ plot_country(COUNTRY_CODE, zoom_factor=zoom, color=COLOR)  # For United States
 ---
 
 ```{python}
-from helpers import highlight_text, get_total_population
-
-population = get_total_population(COUNTRY_CODE)
-highlight_text(f"{population:,}", 'Population', color=COLOR)
+pop_thousands = get_country_stat(df_country_un, column_name='TPopulation1July') # In thousands
+population = pop_thousands * 1000
+highlight_text(f"{population:,}", 'Population', color=color)
 ```
 ---
 
 ```{python}
-from helpers import gender_ratio
-
-gender_ratio(COUNTRY_CODE, color=COLOR)
+gender_ratio(df_country_un, color=color)
 ```
 
 ---
 ```{python}
-from helpers import highlight_text, get_median_age
+age = get_country_stat(df_country_un, column_name='MedianAgePop')
 
-age = get_median_age(COUNTRY_CODE)
-
-highlight_text(str(age), 'Median Age', color=COLOR)
+highlight_text(str(age), 'Median Age', color=color)
 ```
 
 ---
 ```{python}
-from helpers import highlight_text, get_life_expectancy
+life_expectancy = get_country_stat(df_country_un, column_name='LEx')
 
-life_expectancy = get_life_expectancy(COUNTRY_CODE)
-
-highlight_text(str(life_expectancy), 'Life Expectancy', color=COLOR)
+highlight_text(str(life_expectancy), 'Life Expectancy', color=color)
 ```
 
 :::
@@ -81,9 +84,7 @@ highlight_text(str(life_expectancy), 'Life Expectancy', color=COLOR)
 #| fig-align: left
 #| fig-width: 1
 #| fig-cap: "Population over time"
-from helpers import population_over_time
-
-population_over_time(COUNTRY_CODE, color=COLOR)
+population_over_time(df_country_un, color=color)
 ```
 ---
 
@@ -92,10 +93,7 @@ population_over_time(COUNTRY_CODE, color=COLOR)
 #| fig-align: left
 #| fig-width: 1
 #| fig-cap: "Age Distribution"
-
-from helpers import plot_ages_new
-
-plot_ages_new(COUNTRY_CODE, color=COLOR)
+plot_ages(df_country_wb, color=color)
 ```
 
 :::
