@@ -24,7 +24,7 @@ zoom = 1.2
 
 ```{python}
 import pandas as pd
-from helpers import plot_country, population_over_time, gender_ratio, plot_ages, get_country_stat, highlight_text
+from report_helpers import plot_country, population_over_time, gender_ratio, plot_ages, get_country_stat, highlight_text
 
 # Load both data files
 df_un = pd.read_csv('./data/un-country-data.csv', low_memory=False)
@@ -82,18 +82,14 @@ highlight_text(str(life_expectancy), 'Life Expectancy', color=color)
 ::: {#secondcol}
 
 ```{python}
-#| echo: false
 #| fig-align: left
-#| fig-width: 1
 #| fig-cap: "Population over time"
 population_over_time(df_country_un, color=color)
 ```
 ---
 
 ```{python}
-#| echo: false
 #| fig-align: left
-#| fig-width: 1
 #| fig-cap: "Age Distribution"
 plot_ages(df_country_wb, color=color)
 ```

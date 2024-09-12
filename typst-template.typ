@@ -4,6 +4,7 @@
   color: "#036531",
   body,
 ) = {
+  
  set text(
     font: "Open Sans",
     size: 12pt,
@@ -25,7 +26,7 @@
     //   grid(
     //     columns: (40%, 60%),
     //     align(horizon, text(fill: rgb("15397F"), size: 12pt, counter(page).display("1"))),
-    //     align(right, image("assets/psclogo.svg", height: 300%)),
+    //     align(right, image("path/to/logo.svg", height: 300%)),
     //   )
     // )
   )
