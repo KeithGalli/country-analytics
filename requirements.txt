@@ -1,0 +1,8 @@
+colorthief
+geopandas
+matplotlib
+numpy
+pandas
+Pillow
+plotly
+quarto-cli
