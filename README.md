@@ -1,6 +1,6 @@
 # Country Analytics Reports w/ Quarto
 
-![Report](images/report.png)
+![Report](images/report-sample.png)
 
 ## Overview
 
