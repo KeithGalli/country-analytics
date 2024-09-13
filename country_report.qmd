@@ -28,7 +28,7 @@ from report_helpers import plot_country, population_over_time, gender_ratio, plo
 
 # Load both data files
 df_un = pd.read_csv('./data/un-country-data.csv', low_memory=False)
-df_wb = pd.read_csv('./data/worldbank-country-data.csv', delimiter=';', low_memory=False)
+df_wb = pd.read_csv('./data/worldbank-country-data.csv', low_memory=False)
 
 # Filter by country code
 df_country_un = df_un[df_un['ISO3_code'] == country_code]
