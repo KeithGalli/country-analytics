@@ -2,9 +2,6 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
-from collections import OrderedDict
-from datetime import datetime
-import re
 
 AGE_GROUP_MAP = {
     (0, 5): '00-09',
@@ -18,12 +15,14 @@ AGE_GROUP_MAP = {
     (80, 80): '80+'
 }
 
-def plot_country(country_code, zoom_factor=1.1, color='blue'):
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+def plot_country(country_code, zoom_factor=1.1, color='blue'):  
+    file = './map/ne_110m_admin_0_countries.shp'
+    world = gpd.read_file(file)
+
     country_code = country_code.upper()
     
     if len(country_code) == 3:
-        country = world[world['iso_a3'] == country_code]
+        country = world[world['ISO_A3'] == country_code]
     else:
         raise ValueError("Invalid country code. Please use a 3 letter code.")
     

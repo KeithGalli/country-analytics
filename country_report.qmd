@@ -12,13 +12,13 @@ format:
             - typst-template.typ
 
 # metadata parameters
-country_code: "IND"
+country_code: "ARG"
 color: "036531"
 ---
 ```{python}
 #| tags: [parameters]
 color = "#036531"
-country_code = 'IND'
+country_code = 'ARG'
 zoom = 1.2
 ```
 

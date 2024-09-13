@@ -1,6 +1,6 @@
 colorthief
-fiona==1.9.6
-geopandas==0.14.3
+fiona
+geopandas
 matplotlib
 numpy
 pandas
