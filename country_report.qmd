@@ -1,26 +1,13 @@
 ---
-title: "Country Report"
+title: "Country Population Comparisons"
 author: "Keith Galli"
 echo: False
 error: False
 warning: False
 engine: jupyter
 format:
-    typst:
-        template-partials: 
-            - typst-show.typ
-            - typst-template.typ
-
-# metadata parameters
-country_code: "ARG"
-color: "036531"
+    html: default
 ---
-```{python}
-#| tags: [parameters]
-color = "#036531"
-country_code = 'ARG'
-zoom = 1.2
-```
 
 ```{python}
 import pandas as pd
@@ -38,62 +25,32 @@ df_country_wb = df_wb[df_wb['Country Code'] == country_code]
 df_country_un.set_index('Time', inplace=True)
 ```
 
-```{python}
-plot_country(country_code, zoom_factor=zoom, color=color)  # For United States
-```
-
-```{=typst}
-#v(-20pt)
-```
-
-:::: {layout="[0.33, 0.66]"}
-
-::: {#firstcol}
-
----
 
 ```{python}
-pop_thousands = get_country_stat(df_country_un, column_name='TPopulation1July') # In thousands
-population = pop_thousands * 1000
-highlight_text(f"{population:,}", 'Population', color=color)
+import plotly.express as px
+import pandas as pd
+
+DEFAULT_COUNTRIES = ['ARG', 'FRA', 'GBR', 'POL']
+
+# Assuming df_un is your original dataframe
+df_un_simple = df_un[['Time', 'ISO3_code', 'TPopulation1July']].copy()
+df_un_simple = df_un_simple.sort_values(['ISO3_code', 'Time'])
+df_un_simple['TPopulation1July'] = df_un_simple['TPopulation1July'] * 1000  # Population is in thousands, get full population
+
+# Filter only to years 1950 to 2024
+df_un_simple = df_un_simple[(df_un_simple['Time'] >= 1950) & (df_un_simple['Time'] <= 2024)]
+
+# Create the figure
+fig = px.line(df_un_simple, 
+              x='Time', 
+              y='TPopulation1July', 
+              color='ISO3_code', 
+              title='Population Over Time')
+
+# Update traces visibility
+for trace in fig.data:
+    trace.visible = 'legendonly' if trace.name not in DEFAULT_COUNTRIES else True
+
+fig.show()
+
 ```
----
-
-```{python}
-gender_ratio(df_country_un, color=color)
-```
-
----
-```{python}
-age = get_country_stat(df_country_un, column_name='MedianAgePop')
-
-highlight_text(str(age), 'Median Age', color=color)
-```
-
----
-```{python}
-life_expectancy = get_country_stat(df_country_un, column_name='LEx')
-
-highlight_text(str(life_expectancy), 'Life Expectancy', color=color)
-```
-
-:::
-
-::: {#secondcol}
-
-```{python}
-#| fig-align: left
-#| fig-cap: "Population over time"
-population_over_time(df_country_un, color=color)
-```
----
-
-```{python}
-#| fig-align: left
-#| fig-cap: "Age Distribution"
-plot_ages(df_country_wb, color=color)
-```
-
-:::
-
-::::
