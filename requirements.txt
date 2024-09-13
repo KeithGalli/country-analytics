@@ -1,5 +1,5 @@
 colorthief
-geopandas
+geopandas==0.14.3
 matplotlib
 numpy
 pandas
