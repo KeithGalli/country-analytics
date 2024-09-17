@@ -4,6 +4,7 @@ geopandas
 matplotlib
 numpy
 pandas
+papermill
 Pillow
 plotly
 quarto-cli
