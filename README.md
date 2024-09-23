@@ -81,7 +81,7 @@ Here are some ideas to extend and personalize your reports:
 
 3. **Make Interactive Reports**: Render to HTML and use Plotly for interactive visualizations.
    
-Publish your Quarto Reports by using [Posit Connect Cloud](https://connect.posit.cloud/)
+Publish your Quarto Reports by using [Posit Connect Cloud](https://pos.it/connect-keith)
 
 ## Acknowledgements
 
